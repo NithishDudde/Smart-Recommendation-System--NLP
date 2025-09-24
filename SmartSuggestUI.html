@@ -1,0 +1,104 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Movie Recommender</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #1e1e1e;
+            color: #fff;
+            padding: 20px;
+        }
+
+        h1 {
+            color: #00e0ff;
+            text-align: center;
+        }
+
+        input, button {
+            padding: 10px;
+            font-size: 16px;
+            margin: 10px;
+        }
+
+        #results {
+            margin-top: 20px;
+        }
+
+        .movie {
+            border-bottom: 1px solid #444;
+            padding: 10px;
+        }
+
+            .movie img {
+                width: 100px;
+                margin-right: 10px;
+                vertical-align: middle;
+            }
+
+        .marquee-container {
+            margin-top: 20px;
+            overflow: hidden;
+            white-space: nowrap;
+            background-color: #222;
+            padding: 10px;
+            border-radius: 10px;
+        }
+
+            .marquee-container img {
+                height: 150px;
+                margin: 0 15px;
+                border-radius: 8px;
+            }
+    </style>
+</head>
+<body>
+    <h1>🎬 Movie Recommendation</h1>
+    <input type="text" id="movieInput" placeholder="Enter your favorite movie" />
+    <button onclick="getRecommendations()">Get Recommendations</button>
+
+    <div class="marquee-container" id="marquee">
+        <marquee behavior="scroll" direction="left" scrollamount="5" id="marqueeContent"></marquee>
+    </div>
+
+    <div id="results"></div>
+
+    <script>
+    async function getRecommendations() {
+      const movieName = document.getElementById('movieInput').value;
+      const response = await fetch(`http://localhost:8080/recommend?movie=${encodeURIComponent(movieName)}`);
+      const movies = await response.json();
+
+      const resultsDiv = document.getElementById('results');
+      resultsDiv.innerHTML = "";
+
+      const marquee = document.getElementById("marqueeContent");
+      marquee.innerHTML = "";
+
+       if (movies.length === 0) {
+           resultsDiv.innerHTML = "<div class='not-found'>Unfortunately, we couldn't find any comparable movies to recommend at this time. You may explore other titles or genres for suggestions.</div>";
+           return;
+       }
+
+      movies.forEach((movie, index) => {
+        const movieDiv = document.createElement("div");
+        movieDiv.className = "movie";
+        movieDiv.innerHTML = `
+          <img src="${movie.image_url}" alt="${movie.title}" />
+          <strong>${index + 1}. ${movie.title}</strong><br/>
+          🎭 ${movie.genre} | 🎬 ${movie.director}<br/>
+          💬 ${movie.tagline}<br/>
+          🧑‍🤝‍🧑 ${movie.cast}
+        `;
+        resultsDiv.appendChild(movieDiv);
+
+        if (index < 5) {
+          marquee.innerHTML += `<img src="${movie.image_url}" alt="${movie.title}"/>`;
+        }
+      });
+    }
+    </script>
+</body>
+</html>
