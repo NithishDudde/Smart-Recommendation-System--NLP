@@ -1,2 +1,4 @@
-# Smart-Recommendation-System--NLP
- Smart Recommendation System -NLP Smart Recommendation System -NLP A movie recommendations system using NLP algorithm, Fast API , HTML ,CSS ,Js.
+#Smart Recommendation System (NLP-Based)
+
+Tech: Python, NLP, FastAPI, HTML, CSS, JavaScript
+Built an AI-driven movie recommendation system using Natural Language Processing and content-based filtering. Developed APIs with FastAPI to deliver personalized recommendations based on textual data.
