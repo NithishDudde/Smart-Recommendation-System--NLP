@@ -1,4 +1,4 @@
-﻿from fastapi import FastAPI, Query
+from fastapi import FastAPI, Query
 from pydantic import BaseModel
 from typing import List
 import pandas as pd
@@ -38,35 +38,39 @@ feature_matrix = vectorizer.fit_transform(x)
 similarity_score = cosine_similarity(feature_matrix)
 
 # 🎯 Recommendation Logic
-def recommend_movies(movie_name: str) -> List[Movie]:
-    titles = df['Movie_Title'].tolist()
-    close_match = difflib.get_close_matches(movie_name, titles, n=1)
-    
-    if not close_match:
-        return []
+def row_to_movie(row) -> Movie:
+    return Movie(
+        title=row['Movie_Title'],
+        genre=row['Movie_Genre'],
+        cast=row['Movie_Cast'],
+        director=row['Movie_Director'],
+        tagline=row['Movie_Tagline'],
+        image_url=f"https://dummyimage.com/200x300/000/fff&text={row['Movie_Title'].replace(' ', '+')}"
+    )
 
-    match = close_match[0]
-    movie_id = df[df.Movie_Title == match]['Movie_ID'].values[0]
-    score_list = list(enumerate(similarity_score[movie_id]))
-    sorted_movies = sorted(score_list, key=lambda x: x[1], reverse=True)
-    
-    recommendations = []
-    for i, (index, _) in enumerate(sorted_movies[:10]):
-        movie_data = df[df.Movie_ID == index].iloc[0]
-        movie_obj = Movie(
-            title=movie_data['Movie_Title'],
-            genre=movie_data['Movie_Genre'],
-            cast=movie_data['Movie_Cast'],
-            director=movie_data['Movie_Director'],
-            tagline=movie_data['Movie_Tagline'],
-            image_url=f"https://dummyimage.com/200x300/000/fff&text={movie_data['Movie_Title'].replace(' ', '+')}"
-        )
-        recommendations.append(movie_obj)
-    return recommendations
+def recommend_movies(movie_name: str) -> List[Movie]:
+    query = movie_name.strip()
+    titles = df['Movie_Title'].tolist()
+    close_match = difflib.get_close_matches(query, titles, n=1, cutoff=0.7)
+
+    # 1) Title match -> similar movies
+    if close_match:
+        idx = df.index[df['Movie_Title'] == close_match[0]][0]
+        scores = sorted(enumerate(similarity_score[idx]), key=lambda x: x[1], reverse=True)
+        return [row_to_movie(df.iloc[i]) for i, _ in scores[1:11]]
+
+    # 2) Fallback: search by actor or director name
+    q = query.lower()
+    mask = (
+        df['Movie_Cast'].str.lower().str.contains(q, regex=False) |
+        df['Movie_Director'].str.lower().str.contains(q, regex=False)
+    )
+    return [row_to_movie(r) for _, r in df[mask].head(10).iterrows()]
 
 # 🔗 API Endpoint
 @app.get("/recommend", response_model=List[Movie])
 def get_recommendations(movie: str = Query(..., description="Your favorite movie title")):
     return recommend_movies(movie)
 uvicorn.run(app, host="127.0.0.1", port=8080)
+
 
