@@ -1,4 +1,4 @@
-# 🎬 SmartSuggest: AI-Based Movie Recommender
+# 🎬 SmartSuggest: AI-Based Movie Recommendation System
 
 SmartSuggest is a full-stack movie recommendation app. Enter a **movie title, an actor, or a director** and get the top 10 most relevant movies instantly.
 
