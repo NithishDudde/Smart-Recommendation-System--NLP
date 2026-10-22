@@ -8,7 +8,7 @@ The backend is built with **FastAPI** and a content-based recommendation engine 
 
 | Search by movie | Search by actor | Search by director |
 |---|---|---|
-| ![Iron Man](pro_photos/Iron_Man.png) | ![Robert Downey Jr](pro_photos/Robert-Downey-Jr.png) | ![Christopher Nolan](pro_photos/Christopher_Nolan.png) |
+| ![Iron Man](Iron_Man.png) | ![Robert Downey Jr](Robert-Downey-Jr.png) | ![Christopher Nolan](Christopher_Nolan.png) |
 
 ## ✨ Features
 
