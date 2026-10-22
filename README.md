@@ -62,7 +62,7 @@ The backend is built with **FastAPI** and a content-based recommendation engine 
 ## 👤 Author
 
 Nithish Dudde
-- LinkedIn: [your-linkedin-url](https://www.linkedin.com/in/nithish-dudde-4954311b9)
+- LinkedIn: (https://www.linkedin.com/in/nithish-dudde-4954311b9)
 
 ## 📄 License
 
