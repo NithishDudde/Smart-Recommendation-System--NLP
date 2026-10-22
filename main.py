@@ -8,27 +8,25 @@ import difflib
 import uvicorn
 from fastapi.middleware.cors import CORSMiddleware
 
-
-
 app = FastAPI()
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # You can restrict this to specific domains later
+    allow_origins=["*"],  
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-# 🎬 Movie schema
+# Movie schema
 class Movie(BaseModel):
     title: str
     genre: str
     cast: str
     director: str
     tagline: str
-    image_url: str  # 👈 You’ll need to populate this with actual image links manually or with a lookup
+    image_url: str 
 
-# 📁 Load and preprocess data once on startup
+# Load and preprocess data once on startup
 df = pd.read_csv('https://github.com/YBI-Foundation/Dataset/raw/main/Movies%20Recommendation.csv')
 df = df.fillna('').infer_objects(copy=False)
 df_features = df[['Movie_Genre','Movie_Keywords','Movie_Tagline','Movie_Cast','Movie_Director']]
@@ -37,7 +35,7 @@ vectorizer = TfidfVectorizer()
 feature_matrix = vectorizer.fit_transform(x)
 similarity_score = cosine_similarity(feature_matrix)
 
-# 🎯 Recommendation Logic
+# Recommendation Logic
 def row_to_movie(row) -> Movie:
     return Movie(
         title=row['Movie_Title'],
@@ -67,7 +65,7 @@ def recommend_movies(movie_name: str) -> List[Movie]:
     )
     return [row_to_movie(r) for _, r in df[mask].head(10).iterrows()]
 
-# 🔗 API Endpoint
+# API Endpoint
 @app.get("/recommend", response_model=List[Movie])
 def get_recommendations(movie: str = Query(..., description="Your favorite movie title")):
     return recommend_movies(movie)
